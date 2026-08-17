@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Судоку Дзен" />
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#edf1ea" />
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1412" />
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#eae7f5" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b120e" />
 <title>Судоку · Дзен</title>
 <script>
 /* тема — до отрисовки, чтобы не мигать */
@@ -19,37 +19,41 @@
 <style>
 /* ================= палитра ================= */
 :root{
-  --bg:#edf1ea; --bg-deep:#e2e9de;
-  --surface:#f8faf5; --surface-2:#f0f4ec;
-  --ink:#1f2b24; --ink-soft:#46564c; --muted:#77877b;
-  --line:#ccd6c9; --line-strong:#93a594;
-  --jade:#2e7d57; --jade-deep:#226043;
-  --jade-soft:rgba(46,125,87,.12);
-  --amber:#a97f26; --amber-soft:rgba(169,127,38,.14);
-  --rose:#bb5c5c; --rose-soft:rgba(187,92,92,.13);
-  --peer:#e5ecdf; --same:#d8e7da;
-  --shadow:0 24px 60px -28px rgba(31,43,36,.35);
+  --bg:#eae7f5; --bg-deep:#ded9ee;
+  --surface:#f9f8fd; --surface-2:#f0edf9;
+  --ink:#241e3d; --ink-soft:#4a4270; --muted:#7d76a3;
+  --line:#d1cbe8; --line-strong:#9a8fc9;
+  --jade:#6d3fd4; --jade-deep:#4a22a8;
+  --jade-soft:rgba(109,63,212,.12);
+  --hl:#6d3fd4; --hl-soft:rgba(109,63,212,.22); --same:rgba(109,63,212,.13);
+  --on-hl:#f8f6ff;
+  --amber:#9a6a0d; --amber-soft:rgba(154,106,13,.15); --amber-line:rgba(154,106,13,.42);
+  --rose:#c43f5c; --rose-soft:rgba(196,63,92,.14);
+  --peer:#e7e2f6;
+  --shadow:0 24px 60px -28px rgba(36,30,61,.4);
   --grain-o:.05;
-  --mote-1:rgba(46,125,87,.55); --mote-2:rgba(169,127,38,.5);
-  --seal-ink:#fff8ec;
+  --mote-1:rgba(109,63,212,.5); --mote-2:rgba(154,106,13,.5);
+  --seal-ink:#fff6e8;
 }
 html.dark{
-  --bg:#0d1412; --bg-deep:#0a0f0d;
-  --surface:#15211b; --surface-2:#182721;
-  --ink:#dde8de; --ink-soft:#b3c3b6; --muted:#74887a;
-  --line:#243329; --line-strong:#3e5345;
-  --jade:#5cb98c; --jade-deep:#7fd0a8;
-  --jade-soft:rgba(92,185,140,.13);
-  --amber:#d9ab55; --amber-soft:rgba(217,171,85,.14);
-  --rose:#dd8585; --rose-soft:rgba(221,133,133,.15);
-  --peer:#16241d; --same:#1d3429;
-  --shadow:0 28px 70px -30px rgba(0,0,0,.7);
+  --bg:#0b120e; --bg-deep:#070c09;
+  --surface:#142219; --surface-2:#192b20;
+  --ink:#f2f8f2; --ink-soft:#c4d5c7; --muted:#83998b;
+  --line:#27392e; --line-strong:#56745f;
+  --jade:#43cf8c; --jade-deep:#8fe8bc;
+  --jade-soft:rgba(67,207,140,.14);
+  --hl:#ff9e2c; --hl-soft:rgba(255,158,44,.26); --same:rgba(255,158,44,.15);
+  --on-hl:#251302;
+  --amber:#ffd166; --amber-soft:rgba(255,209,102,.13); --amber-line:rgba(255,209,102,.45);
+  --rose:#ff8f8f; --rose-soft:rgba(255,143,143,.17);
+  --peer:#1b2f24;
+  --shadow:0 28px 70px -30px rgba(0,0,0,.75);
   --grain-o:.07;
-  --mote-1:rgba(127,208,168,.5); --mote-2:rgba(217,171,85,.45);
+  --mote-1:rgba(143,232,188,.5); --mote-2:rgba(255,209,102,.5);
   --seal-ink:#241a08;
 }
 html{background:var(--bg)}
-html.dark{background:#0d1412}
+html.dark{background:#0b120e}
 *{box-sizing:border-box}
 body{
   margin:0; min-height:100vh; min-height:100dvh;
@@ -99,7 +103,7 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .icon-btn:hover{transform:translateY(-1px)}
 .icon-btn:active{transform:scale(.94)}
 .hidden{display:none!important}
-.install-btn{border-color:rgba(169,127,38,.45);color:var(--amber);background:var(--amber-soft);animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+.install-btn{border-color:var(--amber-line);color:var(--amber);background:var(--amber-soft);animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
 
 /* ================= доска ================= */
 .board-frame{
@@ -119,8 +123,6 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .cell.r2,.cell.r5{border-bottom:2px solid var(--line-strong)}
 .cell.c8{border-right:0}.cell.r8{border-bottom:0}
 .cell.peer{background:var(--peer)}
-.cell.same{background:var(--same)}
-.cell.selected{background:var(--jade-soft);box-shadow:inset 0 0 0 2px var(--jade);z-index:1}
 .cell.conflict{background:var(--rose-soft)}
 .cell.skeleton{background:var(--surface-2);pointer-events:none}
 .cell.skeleton::after{content:"";position:absolute;inset:0;
@@ -131,6 +133,10 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .cv.pop{animation:pop .26s cubic-bezier(.34,1.56,.64,1)}
 @keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
 .cell.given .cv{color:var(--ink);font-weight:700}
+.cell.same{background:var(--same)}
+.cell.same .cv{color:var(--hl);font-weight:700}
+.cell.selected{background:var(--hl-soft);box-shadow:inset 0 0 0 2px var(--hl);z-index:1}
+.cell.selected .cv{color:var(--hl)}
 .cell.hinted .cv{color:var(--amber);font-weight:700}
 .cell.conflict .cv{color:var(--rose)}
 .ng{display:none;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
@@ -151,21 +157,28 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
   transition:transform .14s ease,background-color .25s ease,border-color .25s ease,opacity .25s ease}
 .key:hover{transform:translateY(-2px);border-color:var(--jade)}
 .key:active{transform:scale(.93)}
+.key.armed{background:var(--hl);border-color:var(--hl);transform:translateY(-2px);
+  box-shadow:0 8px 18px -8px var(--hl-soft)}
+.key.armed .d{color:var(--on-hl)}
+.key.armed .n{color:var(--on-hl);opacity:.75}
+.key.armed:hover{border-color:var(--hl)}
 .key .d{font-size:clamp(16px,4.6vw,21px);font-weight:700;line-height:1;color:var(--ink)}
 .key .n{font-size:10px;font-weight:600;line-height:1;color:var(--muted)}
 .key.done{opacity:.4}
 .key.done .d{color:var(--muted)}
 .key.rise{animation:riseIn .4s ease both}
 @keyframes riseIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
-.actions{width:100%;margin-top:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.actions{width:100%;margin-top:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .act{border:1px solid var(--line);background:var(--surface);border-radius:10px;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 2px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 1px;
   color:var(--ink-soft);
-  transition:transform .14s ease,background-color .25s ease,border-color .25s ease,color .25s ease}
+  transition:transform .14s ease,background-color .25s ease,border-color .25s ease,color .25s ease,opacity .25s ease}
 .act:hover{transform:translateY(-2px)}
 .act:active{transform:scale(.95)}
-.act .lbl{font-size:11px;font-weight:600}
-.act.hint{border-color:rgba(169,127,38,.4);background:var(--amber-soft);color:var(--amber)}
+.act .lbl{font-size:10px;font-weight:600;letter-spacing:.01em}
+.act.off{opacity:.38}
+.act.off:hover{transform:none}
+.act.hint{border-color:var(--amber-line);background:var(--amber-soft);color:var(--amber)}
 .act.hint:hover{border-color:var(--amber)}
 .act.notes.active{background:var(--jade);border-color:var(--jade);color:var(--surface)}
 .act.arm{border-color:var(--rose);background:var(--rose-soft);color:var(--rose)}
@@ -261,7 +274,7 @@ html.dark .btn-primary{color:#0c1712}
 
   <div id="board" class="board-frame" role="grid" aria-label="Поле судоку"></div>
 
-  <div class="keys" id="keys" role="group" aria-label="Цифры"></div>
+  <div class="keys" id="keys" role="group" aria-label="Цифры" title="Выберите цифру — затем тыкайте в пустые клетки, она будет вставать сама"></div>
 
   <div class="actions">
     <button class="act hint" id="btnHint" title="Подсказка — заполняет клетку правильным числом (H)">
@@ -270,6 +283,10 @@ html.dark .btn-primary{color:#0c1712}
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="8" cy="12" r="4.1"/><circle cx="16" cy="12" r="4.1"/></svg>
       </span>
       <span class="lbl">Подсказка</span>
+    </button>
+    <button class="act off" id="btnUndo" title="Отменить действие (Ctrl+Z или U)" aria-disabled="true">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-4"/></svg>
+      <span class="lbl">Отмена</span>
     </button>
     <button class="act notes" id="btnNotes" title="Заметки карандашом (N)" aria-pressed="false">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.5-1L19.6 7.9a2.05 2.05 0 0 0-2.9-2.9L5.6 16.1 4 20z"/><path d="M13.8 6.2l3 3"/></svg>
@@ -291,7 +308,7 @@ html.dark .btn-primary{color:#0c1712}
   </p>
   <p class="calm2">Подсказки использованы: <b id="hintsUsed">0</b> · осталось: <b>∞</b></p>
 
-  <p class="kbd">Клавиатура: 1–9 — цифра · N — заметки · H — подсказка · стрелки — движение · Backspace — стереть</p>
+  <p class="kbd">Клавиатура: 1–9 — цифра · N — заметки · H — подсказка · Ctrl+Z / U — отмена · стрелки — движение · Backspace — стереть · Esc — сброс</p>
 </main>
 
 <!-- победа -->
@@ -449,7 +466,8 @@ var SAVE_KEY = "sudoku-zen-save", THEME_KEY = "sudoku-zen-theme";
 var S = {
   puzzle: null, solution: null, board: [], given: [], notes: [],
   sel: null, notesMode: false, hints: 0, elapsed: 0,
-  won: false, generating: true, hintedCells: {}
+  won: false, generating: true, hintedCells: {},
+  armed: 0, history: []
 };
 function fmtTime(t){ return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
 function save(){
@@ -469,6 +487,23 @@ function loadSave(){
         s.solution && s.solution.length === CELLS && s.given && s.notes) return s;
     return null;
   }catch(e){ return null; }
+}
+
+/* ============ отмена действий ============ */
+function snapshot(){
+  S.history.push({
+    board: S.board.slice(), notes: S.notes.slice(), given: S.given.slice(),
+    hinted: JSON.stringify(S.hintedCells), hints: S.hints, sel: S.sel
+  });
+  if (S.history.length > 300) S.history.shift();
+}
+function undo(){
+  if (!S.history.length || S.generating) return;
+  if (S.won){ S.won = false; $("win").hidden = true; }
+  var h = S.history.pop();
+  S.board = h.board; S.notes = h.notes; S.given = h.given;
+  S.hintedCells = JSON.parse(h.hinted); S.hints = h.hints; S.sel = h.sel;
+  render(); save();
 }
 
 /* ============ DOM ============ */
@@ -499,7 +534,7 @@ var RING_C = 65.97;
     k.type = "button"; k.className = "key rise";
     k.style.animationDelay = (d * 30) + "ms";
     k.innerHTML = '<span class="d">' + d + '</span><span class="n">9</span>';
-    (function(digit){ k.addEventListener("click", function(){ placeDigit(digit); }); })(d);
+    (function(digit){ k.addEventListener("click", function(){ onKeyTap(digit); }); })(d);
     keysEl.appendChild(k);
     keyBtns.push(k);
     keyCnts.push(k.lastChild);
@@ -519,6 +554,7 @@ function render(){
   if (S.board.length !== CELLS) return;
   var conflicts = computeConflicts(S.board);
   var selValue = S.sel != null ? S.board[S.sel] : 0;
+  var hl = S.armed || selValue; /* подсвечиваемая цифра: выбранная на панели или в клетке */
   var peerSet = null;
   if (S.sel != null){
     peerSet = {};
@@ -533,7 +569,7 @@ function render(){
     el.classList.toggle("hinted", !!S.hintedCells[i]);
     el.classList.toggle("selected", S.sel === i);
     el.classList.toggle("peer", S.sel !== i && peerSet && !!peerSet[i]);
-    el.classList.toggle("same", S.sel !== i && v !== 0 && v === selValue);
+    el.classList.toggle("same", S.sel !== i && v !== 0 && v === hl);
     el.classList.toggle("conflict", !S.given[i] && v !== 0 && !!conflicts[i]);
     var cv = cellCV[i];
     var txt = v ? String(v) : "";
@@ -558,7 +594,12 @@ function render(){
     var left = 9 - counts[d2];
     keyCnts[d2 - 1].textContent = left > 0 ? left : "—";
     keyBtns[d2 - 1].classList.toggle("done", left <= 0);
+    keyBtns[d2 - 1].classList.toggle("armed", S.armed === d2);
   }
+  /* кнопка отмены: активна, только если есть что отменять */
+  var ub = $("btnUndo");
+  ub.classList.toggle("off", !S.history.length);
+  ub.setAttribute("aria-disabled", S.history.length ? "false" : "true");
   /* прогресс и время */
   ringEl.style.strokeDashoffset = String(RING_C * (1 - correct / CELLS));
   clockEl.textContent = fmtTime(S.elapsed);
@@ -566,7 +607,27 @@ function render(){
 }
 
 /* ============ действия ============ */
-function select(i){ S.sel = i; render(); }
+/* выбор клетки: если «вооружена» цифра и клетка пустая — сразу ставим её */
+function select(i){
+  if (S.armed && !S.won && !S.generating && S.solution && !S.given[i] && S.board[i] === 0){
+    placeDigit(S.armed, i);
+    return;
+  }
+  S.sel = i; render();
+}
+/* тап по цифре на панели: включить режим быстрого заполнения;
+   второй тап по той же цифре — поставить её в выбранную клетку и выключить */
+function onKeyTap(d){
+  if (S.notesMode || S.won || S.generating){ placeDigit(d); return; }
+  if (S.armed === d){
+    if (S.sel != null && !S.given[S.sel] && S.board[S.sel] !== d) placeDigit(d);
+    S.armed = 0;
+  } else {
+    S.armed = d;
+    if (S.sel != null && !S.given[S.sel] && S.board[S.sel] !== d) placeDigit(d);
+  }
+  render();
+}
 
 function isComplete(b){
   for (var i = 0; i < CELLS; i++) if (b[i] !== S.solution[i]) return false;
@@ -578,19 +639,27 @@ function finishIfComplete(b){
     setTimeout(showWin, 600);
   }
 }
-function placeDigit(d){
-  if (!S.solution || S.won || S.generating || S.sel == null || S.given[S.sel]) return;
-  var i = S.sel;
-  if (S.notesMode){
+function placeDigit(d, at){
+  var i = (at != null) ? at : S.sel;
+  if (!S.solution || S.won || S.generating || i == null || S.given[i]) return;
+  if (S.notesMode && at == null){
     if (S.board[i] !== 0) return;
+    snapshot();
     S.notes[i] ^= (1 << d);
     render(); save(); return;
   }
+  snapshot();
   S.board[i] = d;
   S.notes[i] = 0;
   delete S.hintedCells[i];
   var ps = PEERS[i];
   for (var k = 0; k < ps.length; k++) S.notes[ps[k]] &= ~(1 << d);
+  /* если все девятки цифры на месте — режим быстрого заполнения гаснет сам */
+  if (S.armed === d){
+    var cnt = 0;
+    for (var j = 0; j < CELLS; j++) if (S.board[j] === d) cnt++;
+    if (cnt >= 9) S.armed = 0;
+  }
   render(); save();
   finishIfComplete(S.board);
 }
@@ -599,6 +668,7 @@ function eraseCell(){
   var i = S.sel;
   if (S.given[i]) return;
   if (S.board[i] === 0 && S.notes[i] === 0) return;
+  snapshot();
   S.board[i] = 0; S.notes[i] = 0;
   delete S.hintedCells[i];
   render(); save();
@@ -614,6 +684,7 @@ function giveHint(){
     target = opts[(Math.random() * opts.length) | 0];
   }
   var d = S.solution[target];
+  snapshot();
   S.board[target] = d;
   S.given[target] = true;
   S.hintedCells[target] = 1;
@@ -633,6 +704,8 @@ function startNew(){
   S.won = false;
   S.sel = null;
   S.notesMode = false;
+  S.armed = 0;
+  S.history = [];
   disarmNew();
   $("btnNotes").classList.remove("active");
   $("btnNotes").setAttribute("aria-pressed", "false");
@@ -671,6 +744,7 @@ $("btnNew").addEventListener("click", function(){
 
 $("btnHint").addEventListener("click", giveHint);
 $("btnErase").addEventListener("click", eraseCell);
+$("btnUndo").addEventListener("click", undo);
 $("btnNotes").addEventListener("click", function(){
   S.notesMode = !S.notesMode;
   this.classList.toggle("active", S.notesMode);
@@ -684,7 +758,7 @@ function applyThemeIcons(){
   $("icoMoon").style.display = dark ? "none" : "";
   $("icoSun").style.display = dark ? "" : "none";
   var meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", dark ? "#0d1412" : "#edf1ea");
+  if (meta) meta.setAttribute("content", dark ? "#0b120e" : "#eae7f5");
 }
 $("themeBtn").addEventListener("click", function(){
   var dark = document.documentElement.classList.toggle("dark");
@@ -703,6 +777,7 @@ setInterval(function(){
 
 /* ============ клавиатура ============ */
 window.addEventListener("keydown", function(e){
+  if ((e.ctrlKey || e.metaKey) && e.code === "KeyZ"){ e.preventDefault(); undo(); return; }
   if (e.ctrlKey || e.metaKey || e.altKey || S.generating) return;
   if (/^(Digit[1-9]|Numpad[1-9])$/.test(e.code)){ placeDigit(parseInt(e.code.slice(-1), 10)); return; }
   switch (e.code){
@@ -718,7 +793,10 @@ window.addEventListener("keydown", function(e){
     case "Backspace": case "Delete": eraseCell(); break;
     case "KeyN": $("btnNotes").click(); break;
     case "KeyH": giveHint(); break;
-    case "Escape": S.sel = null; render(); break;
+    case "KeyU": undo(); break;
+    case "Escape":
+      if (S.armed){ S.armed = 0; } else { S.sel = null; }
+      render(); break;
   }
 });
 
