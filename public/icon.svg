@@ -1,7 +1,56 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="118" fill="#0d1412"/>
-  <circle cx="256" cy="256" r="138" fill="none" stroke="#4fbf8b" stroke-width="46"
+  <defs>
+    <radialGradient id="bgGlow" cx="30%" cy="24%" r="90%">
+      <stop offset="0%" stop-color="#1e3a2c"/>
+      <stop offset="55%" stop-color="#101d17"/>
+      <stop offset="100%" stop-color="#0a100d"/>
+    </radialGradient>
+    <radialGradient id="goldGlow" cx="78%" cy="82%" r="55%">
+      <stop offset="0%" stop-color="#d9ab55" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#d9ab55" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+    <filter id="paper" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.05"/></feComponentTransfer>
+      <feComposite operator="over" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bgGlow)"/>
+  <rect width="512" height="512" rx="112" fill="url(#goldGlow)"/>
+  <rect width="512" height="512" rx="112" fill="#000" opacity="0" filter="url(#paper)"/>
+
+  <!-- мягкое свечение под кругом -->
+  <circle cx="256" cy="256" r="140" fill="none" stroke="#4fbf8b" stroke-width="72"
+    stroke-linecap="round" stroke-dasharray="742 138" transform="rotate(-108 256 256)"
+    opacity="0.22" filter="url(#soft)"/>
+
+  <!-- кистевой круг энсо: тёмный мазок-тень + основной нефритовый -->
+  <circle cx="256" cy="256" r="138" fill="none" stroke="#1c4a35" stroke-width="46"
+    stroke-linecap="round" stroke-dasharray="738 128" transform="rotate(-104 256 256)"/>
+  <circle cx="256" cy="256" r="138" fill="none" stroke="#5cb98c" stroke-width="38"
     stroke-linecap="round" stroke-dasharray="738 128" transform="rotate(-108 256 256)"/>
-  <rect x="296" y="322" width="54" height="54" rx="12" fill="#d9ab55" transform="rotate(8 323 349)"/>
-  <circle cx="204" cy="256" r="7" fill="#d9ab55" opacity="0.85"/>
+  <circle cx="256" cy="256" r="138" fill="none" stroke="#a8e6c6" stroke-width="12"
+    stroke-linecap="round" stroke-dasharray="300 620" transform="rotate(-96 256 256)" opacity="0.55"/>
+
+  <!-- иероглиф -->
+  <text x="256" y="284" text-anchor="middle" font-family="'Noto Serif SC','Source Han Serif SC',Georgia,serif"
+    font-size="196" font-weight="700" fill="#e9dcba" opacity="0.96">禅</text>
+
+  <!-- печать ханко -->
+  <g transform="rotate(9 330 356)">
+    <rect x="299" y="325" width="62" height="62" rx="13" fill="#c98f3a"/>
+    <rect x="299" y="325" width="62" height="62" rx="13" fill="none" stroke="#f2d491" stroke-width="3" opacity="0.7"/>
+    <text x="330" y="372" text-anchor="middle" font-family="'Noto Serif SC',Georgia,serif"
+      font-size="44" font-weight="700" fill="#3a2708">和</text>
+  </g>
+
+  <!-- три точки-намёка на сетку -->
+  <circle cx="176" cy="256" r="7" fill="#d9ab55" opacity="0.9"/>
+  <circle cx="256" cy="352" r="5.5" fill="#d9ab55" opacity="0.65"/>
+  <circle cx="196" cy="176" r="4.5" fill="#5cb98c" opacity="0.8"/>
 </svg>

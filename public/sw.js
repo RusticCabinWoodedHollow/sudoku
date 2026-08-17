@@ -1,6 +1,6 @@
 /* Сервис-воркер: кэш «один файл + иконка», полная работа офлайн. */
-const CACHE = "sudoku-zen-v1";
-const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
+const CACHE = "sudoku-zen-v2";
+const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-maskable.svg"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(

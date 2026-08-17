@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bgGlow" cx="30%" cy="24%" r="90%">
+      <stop offset="0%" stop-color="#1e3a2c"/>
+      <stop offset="55%" stop-color="#101d17"/>
+      <stop offset="100%" stop-color="#0a100d"/>
+    </radialGradient>
+    <radialGradient id="goldGlow" cx="78%" cy="82%" r="55%">
+      <stop offset="0%" stop-color="#d9ab55" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#d9ab55" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+  </defs>
+
+  <!-- полный квадрат: Android сам обрежет под свою маску -->
+  <rect width="512" height="512" fill="url(#bgGlow)"/>
+  <rect width="512" height="512" fill="url(#goldGlow)"/>
+
+  <circle cx="256" cy="256" r="122" fill="none" stroke="#4fbf8b" stroke-width="66"
+    stroke-linecap="round" stroke-dasharray="648 120" transform="rotate(-108 256 256)"
+    opacity="0.22" filter="url(#soft)"/>
+
+  <circle cx="256" cy="256" r="120" fill="none" stroke="#1c4a35" stroke-width="42"
+    stroke-linecap="round" stroke-dasharray="642 112" transform="rotate(-104 256 256)"/>
+  <circle cx="256" cy="256" r="120" fill="none" stroke="#5cb98c" stroke-width="34"
+    stroke-linecap="round" stroke-dasharray="642 112" transform="rotate(-108 256 256)"/>
+  <circle cx="256" cy="256" r="120" fill="none" stroke="#a8e6c6" stroke-width="10"
+    stroke-linecap="round" stroke-dasharray="262 542" transform="rotate(-96 256 256)" opacity="0.55"/>
+
+  <text x="256" y="280" text-anchor="middle" font-family="'Noto Serif SC','Source Han Serif SC',Georgia,serif"
+    font-size="168" font-weight="700" fill="#e9dcba" opacity="0.96">禅</text>
+
+  <g transform="rotate(9 318 344)">
+    <rect x="291" y="317" width="54" height="54" rx="11" fill="#c98f3a"/>
+    <rect x="291" y="317" width="54" height="54" rx="11" fill="none" stroke="#f2d491" stroke-width="2.5" opacity="0.7"/>
+    <text x="318" y="358" text-anchor="middle" font-family="'Noto Serif SC',Georgia,serif"
+      font-size="38" font-weight="700" fill="#3a2708">和</text>
+  </g>
+
+  <circle cx="186" cy="256" r="6" fill="#d9ab55" opacity="0.9"/>
+  <circle cx="256" cy="340" r="5" fill="#d9ab55" opacity="0.65"/>
+</svg>
