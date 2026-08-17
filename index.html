@@ -830,13 +830,9 @@ if (restored){
   link.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
   document.head.appendChild(link);
 
-  /* офлайн-режим и кнопка «Установить» — только при раздаче по http(s) */
+  /* кнопка «Установить» — только при раздаче по http(s) (Chrome на Android).
+     Офлайн-режим не требует сервис-воркера: файл полностью самодостаточен. */
   var served = location.protocol === "http:" || location.protocol === "https:";
-  if (served && "serviceWorker" in navigator){
-    window.addEventListener("load", function(){
-      navigator.serviceWorker.register("sw.js").catch(function(){});
-    });
-  }
   var deferred = null, btn = $("installBtn");
   window.addEventListener("beforeinstallprompt", function(e){
     e.preventDefault();
