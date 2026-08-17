@@ -3,7 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#edf1ea" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#edf1ea" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1412" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon.svg" />
 <title>Судоку · Дзен</title>
 <script>
 /* тема — до отрисовки, чтобы не мигать */
@@ -93,6 +99,8 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
   transition:transform .14s ease,background-color .3s ease,border-color .3s ease,color .3s ease}
 .icon-btn:hover{transform:translateY(-1px)}
 .icon-btn:active{transform:scale(.94)}
+.hidden{display:none!important}
+.install-btn{border-color:rgba(169,127,38,.45);color:var(--amber);background:var(--amber-soft);animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
 
 /* ================= доска ================= */
 .board-frame{
@@ -242,6 +250,9 @@ html.dark .btn-primary{color:#0c1712}
         </svg>
         <span class="t" id="clock">0:00</span>
       </div>
+      <button class="icon-btn install-btn hidden" id="installBtn" aria-label="Установить приложение" title="Установить приложение">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v10.5"/><path d="M7.5 9.5L12 14l4.5-4.5"/><path d="M4.5 16.5v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></svg>
+      </button>
       <button class="icon-btn" id="themeBtn" aria-label="Переключить тему">
         <svg id="icoMoon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
         <svg id="icoSun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4L19 19M19 5l-1.6 1.6M6.6 17.4L5 19"/></svg>
@@ -759,6 +770,40 @@ if (restored){
 } else {
   startNew();
 }
+})();
+
+/* ============ установка как приложение (PWA) ============
+   Работает только при раздаче по http(s); при открытии файла
+   с диска (file://) игра ведёт себя как обычный документ. */
+(function(){
+  var served = location.protocol === "http:" || location.protocol === "https:";
+  if (!served) return;
+  var link = document.createElement("link");
+  link.rel = "manifest";
+  link.href = "manifest.webmanifest";
+  document.head.appendChild(link);
+  if ("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){});
+    });
+  }
+  var deferred = null, btn = $("installBtn");
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferred = e;
+    btn.classList.remove("hidden");
+  });
+  btn.addEventListener("click", function(){
+    if (!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function(){
+      deferred = null;
+      btn.classList.add("hidden");
+    });
+  });
+  window.addEventListener("appinstalled", function(){
+    btn.classList.add("hidden");
+  });
 })();
 </script>
 </body>

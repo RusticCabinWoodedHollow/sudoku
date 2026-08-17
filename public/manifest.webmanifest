@@ -1,0 +1,16 @@
+{
+  "name": "Судоку Дзен",
+  "short_name": "Судоку",
+  "description": "Дзен-судоку среднего уровня: без проигрыша, без звука, с бесконечными подсказками.",
+  "lang": "ru",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d1412",
+  "theme_color": "#edf1ea",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
