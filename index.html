@@ -94,9 +94,8 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .brand h1{margin:0;font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1}
 .brand .sub{margin-top:4px;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .head-tools{display:flex;align-items:center;gap:8px}
-.chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);
-  border-radius:999px;padding:6px 12px;transition:background-color .45s ease,border-color .45s ease}
-.chip .t{font-size:14px;font-weight:600;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.chip{display:flex;align-items:center;border:1px solid var(--line);background:var(--surface);
+  border-radius:999px;padding:5px 8px;transition:background-color .45s ease,border-color .45s ease}
 .icon-btn{width:40px;height:40px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
   color:var(--ink-soft);display:grid;place-items:center;cursor:pointer;
   transition:transform .14s ease,background-color .3s ease,border-color .3s ease,color .3s ease}
@@ -182,9 +181,6 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .act.hint:hover{border-color:var(--amber)}
 .act.notes.active{background:var(--jade);border-color:var(--jade);color:var(--surface)}
 .act.arm{border-color:var(--rose);background:var(--rose-soft);color:var(--rose)}
-.calm{margin:16px 0 0;font-size:12px;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:6px}
-.calm2{margin:5px 0 0;font-size:11px;color:var(--muted);opacity:.8}
-.calm2 b{color:var(--amber)}
 .kbd{margin:auto 0 0;padding-top:26px;font-size:11px;line-height:1.6;color:var(--muted);opacity:.7;text-align:center}
 @media (hover:none){.kbd{display:none}}
 
@@ -206,8 +202,8 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 @keyframes sealIn{0%{opacity:0;transform:scale(.4) rotate(-14deg)}100%{opacity:1;transform:scale(1) rotate(0deg)}}
 .win-card h2{margin:0;font-size:38px;font-weight:800;letter-spacing:-.02em}
 .win-card p{margin:10px 0 0;font-size:14px;color:var(--muted)}
-.stats{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px;
-  border:1px solid var(--line);background:var(--surface-2);border-radius:14px;padding:16px}
+.stats{margin-top:22px;display:grid;grid-template-columns:1fr;gap:12px;
+  border:1px solid var(--line);background:var(--surface-2);border-radius:14px;padding:14px 16px}
 .stats .cap{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .stats .val{margin-top:4px;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
 .stats .val.gold{color:var(--amber)}
@@ -253,14 +249,13 @@ html.dark .btn-primary{color:#0c1712}
       </div>
     </div>
     <div class="head-tools">
-      <div class="chip" title="Прогресс и время">
+      <div class="chip" title="Прогресс решения">
         <svg width="26" height="26" viewBox="0 0 26 26" style="transform:rotate(-90deg)" aria-hidden="true">
           <circle cx="13" cy="13" r="10.5" fill="none" stroke="var(--line)" stroke-width="3.2"/>
           <circle id="ring" cx="13" cy="13" r="10.5" fill="none" stroke="var(--jade)" stroke-width="3.2"
             stroke-linecap="round" stroke-dasharray="65.97" stroke-dashoffset="65.97"
             style="transition:stroke-dashoffset .6s cubic-bezier(.22,1,.36,1)"/>
         </svg>
-        <span class="t" id="clock">0:00</span>
       </div>
       <button class="icon-btn install-btn hidden" id="installBtn" aria-label="Установить приложение" title="Установить приложение">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v10.5"/><path d="M7.5 9.5L12 14l4.5-4.5"/><path d="M4.5 16.5v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></svg>
@@ -302,12 +297,6 @@ html.dark .btn-primary{color:#0c1712}
     </button>
   </div>
 
-  <p class="calm">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="8" cy="12" r="4.1"/><circle cx="16" cy="12" r="4.1"/></svg>
-    подсказки бесконечны · здесь нельзя проиграть · без звука
-  </p>
-  <p class="calm2">Подсказки использованы: <b id="hintsUsed">0</b> · осталось: <b>∞</b></p>
-
   <p class="kbd">Клавиатура: 1–9 — цифра · N — заметки · H — подсказка · Ctrl+Z / U — отмена · стрелки — движение · Backspace — стереть · Esc — сброс</p>
 </main>
 
@@ -325,7 +314,6 @@ html.dark .btn-primary{color:#0c1712}
     <h2 class="font-display">Круг замкнут.</h2>
     <p>Все 81 клетка на своих местах — спокойно и без единого поражения.</p>
     <div class="stats">
-      <div><div class="cap">Время</div><div class="val" id="winTime">0:00</div></div>
       <div><div class="cap">Подсказок</div><div class="val gold" id="winHints">0 <small>из ∞</small></div></div>
     </div>
     <button class="btn-primary" id="btnAgain">Новая партия</button>
@@ -469,7 +457,6 @@ var S = {
   won: false, generating: true, hintedCells: {},
   armed: 0, history: []
 };
-function fmtTime(t){ return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
 function save(){
   try{
     localStorage.setItem(SAVE_KEY, JSON.stringify({
@@ -508,7 +495,7 @@ function undo(){
 
 /* ============ DOM ============ */
 var $ = function(id){ return document.getElementById(id); };
-var boardEl = $("board"), keysEl = $("keys"), clockEl = $("clock"), ringEl = $("ring");
+var boardEl = $("board"), keysEl = $("keys"), ringEl = $("ring");
 var cells = [], cellCV = [], cellNG = [], keyBtns = [], keyCnts = [];
 var RING_C = 65.97;
 
@@ -600,10 +587,8 @@ function render(){
   var ub = $("btnUndo");
   ub.classList.toggle("off", !S.history.length);
   ub.setAttribute("aria-disabled", S.history.length ? "false" : "true");
-  /* прогресс и время */
+  /* прогресс */
   ringEl.style.strokeDashoffset = String(RING_C * (1 - correct / CELLS));
-  clockEl.textContent = fmtTime(S.elapsed);
-  $("hintsUsed").textContent = S.hints;
 }
 
 /* ============ действия ============ */
@@ -615,16 +600,15 @@ function select(i){
   }
   S.sel = i; render();
 }
-/* тап по цифре на панели: включить режим быстрого заполнения;
-   второй тап по той же цифре — поставить её в выбранную клетку и выключить */
+/* тап по цифре на панели: включить режим быстрого заполнения и сбросить
+   выделение клетки; повторный тап по той же цифре — выключить режим */
 function onKeyTap(d){
   if (S.notesMode || S.won || S.generating){ placeDigit(d); return; }
   if (S.armed === d){
-    if (S.sel != null && !S.given[S.sel] && S.board[S.sel] !== d) placeDigit(d);
     S.armed = 0;
   } else {
     S.armed = d;
-    if (S.sel != null && !S.given[S.sel] && S.board[S.sel] !== d) placeDigit(d);
+    S.sel = null; /* на поле подсвечивается только выбранная на панели цифра */
   }
   render();
 }
@@ -767,14 +751,6 @@ $("themeBtn").addEventListener("click", function(){
 });
 applyThemeIcons();
 
-/* ============ таймер (мягкий, ни на что не влияет) ============ */
-setInterval(function(){
-  if (S.generating || S.won || !S.solution) return;
-  S.elapsed++;
-  clockEl.textContent = fmtTime(S.elapsed);
-  if (S.elapsed % 10 === 0) save();
-}, 1000);
-
 /* ============ клавиатура ============ */
 window.addEventListener("keydown", function(e){
   if ((e.ctrlKey || e.metaKey) && e.code === "KeyZ"){ e.preventDefault(); undo(); return; }
@@ -803,7 +779,6 @@ window.addEventListener("keydown", function(e){
 /* ============ победа ============ */
 var motesBuilt = false;
 function showWin(){
-  $("winTime").textContent = fmtTime(S.elapsed);
   $("winHints").innerHTML = S.hints + " <small>из ∞</small>";
   if (!motesBuilt){
     motesBuilt = true;
