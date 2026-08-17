@@ -1,12 +1,21 @@
-/* Сервис-воркер: кэш «один файл + иконка», полная работа офлайн. */
-const CACHE = "sudoku-zen-v2";
-const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-maskable.svg"];
+/* Сервис-воркер: кэширует игру для полной работы офлайн.
+   Игра и иконка живут внутри index.html — кэшируется один файл. */
+const CACHE = "sudoku-zen-v3";
+const ASSETS = ["./", "./index.html"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
     caches
       .open(CACHE)
-      .then((c) => c.addAll(ASSETS))
+      .then((c) =>
+        Promise.all(
+          ASSETS.map((url) =>
+            fetch(url)
+              .then((res) => (res.ok ? c.put(url, res.clone()) : null))
+              .catch(() => null)
+          )
+        )
+      )
       .then(() => self.skipWaiting())
   );
 });
