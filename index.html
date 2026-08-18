@@ -168,8 +168,8 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 }
 
 /* ================= цифры и действия ================= */
-.keys{width:100%;margin-top:16px;display:grid;grid-template-columns:repeat(9,1fr);gap:6px}
-.key{aspect-ratio:4/5;border:1px solid var(--line);background:var(--surface);border-radius:9px;cursor:pointer;
+.keys{width:100%;margin-top:16px;display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.key{aspect-ratio:7/5;border:1px solid var(--line);background:var(--surface);border-radius:10px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;
   transition:transform .14s ease,background-color .25s ease,border-color .25s ease,opacity .25s ease}
 .key:hover{transform:translateY(-2px);border-color:var(--jade)}
@@ -179,8 +179,9 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .key.armed .d{color:var(--on-hl)}
 .key.armed .n{color:var(--on-hl);opacity:.75}
 .key.armed:hover{border-color:var(--hl)}
-.key .d{font-size:clamp(16px,4.6vw,21px);font-weight:700;line-height:1;color:var(--ink)}
-.key .n{font-size:10px;font-weight:600;line-height:1;color:var(--muted)}
+.key .d{font-size:clamp(20px,5.6vw,25px);font-weight:700;line-height:1;color:var(--ink)}
+.key .n{font-size:11px;font-weight:600;line-height:1;color:var(--muted)}
+.key-erase{color:var(--ink-soft)}
 .key.done{opacity:.4}
 .key.done .d{color:var(--muted)}
 .key.rise{animation:riseIn .4s ease both}
@@ -592,6 +593,16 @@ var RING_C = 65.97;
     keyBtns.push(k);
     keyCnts.push(k.lastChild);
   }
+  /* десятая клавиша — стирание, заполняет второй ряд (6 7 8 9 + ⌫) */
+  var ek = document.createElement("button");
+  ek.type = "button";
+  ek.className = "key key-erase rise";
+  ek.style.animationDelay = "300ms";
+  ek.title = "Стереть клетку (Backspace)";
+  ek.setAttribute("aria-label", "Стереть клетку");
+  ek.innerHTML = '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 20h11.5"/><path d="M5.2 14.6l7.4-7.4a2 2 0 0 1 2.8 0l3 3a2 2 0 0 1 0 2.8l-5.4 5.4a2 2 0 0 1-1.4.6H9l-3.8-3.8a1.9 1.9 0 0 1 0-2.6z"/><path d="M9.5 10.3l4.6 4.6"/></svg>';
+  ek.addEventListener("click", function(){ eraseCell(); });
+  keysEl.appendChild(ek);
 })();
 
 function showSkeleton(){
