@@ -902,13 +902,16 @@ if (store.kind === "memory"){
 
 /* ============ установка как приложение (PWA) ============
    Иконка и манифест встроены прямо в этот файл (data-URI) —
-   файл полностью самодостаточен. Установка и офлайн-режим
-   доступны при раздаче по http(s); при открытии с диска
-   (file://) игра просто работает как обычный документ. */
+   файл полностью самодостаточен. SVG-иконка при загрузке
+   растеризуется в настоящие PNG (192/512/maskable), которые
+   надёжно подхватывают Chrome и лаунчеры Android.
+   Установка доступна при раздаче по http(s) — например,
+   на GitHub Pages; при открытии с диска (file://) игра
+   просто работает как обычный документ. */
 (function(){
-  function svgIcon(maskable){
-    var rx = maskable ? 0 : 112;
-    return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'>"
+  function svgIcon(maskable, size){
+    var rx = maskable ? 0 : 112, wh = size ? (" width='" + size + "' height='" + size + "'") : "";
+    return "<svg xmlns='http://www.w3.org/2000/svg'" + wh + " viewBox='0 0 512 512'>"
       + "<defs><radialGradient id='g' cx='30%' cy='24%' r='90%'>"
       + "<stop offset='0%' stop-color='#1e3a2c'/><stop offset='55%' stop-color='#101d17'/><stop offset='100%' stop-color='#0a100d'/></radialGradient>"
       + "<radialGradient id='h' cx='78%' cy='82%' r='55%'>"
@@ -934,10 +937,28 @@ if (store.kind === "memory"){
   fav.rel = "icon"; fav.type = "image/svg+xml"; fav.href = dataUri(svgIcon(false));
   document.head.appendChild(fav);
   var apple = document.createElement("link");
-  apple.rel = "apple-touch-icon"; apple.href = dataUri(svgIcon(false));
+  apple.rel = "apple-touch-icon"; apple.href = dataUri(svgIcon(false, 180));
   document.head.appendChild(apple);
 
-  /* манифест тоже встроен; без start_url — берётся адрес самой страницы */
+  /* растеризация SVG в настоящий PNG (canvas): такие иконки гарантированно
+     принимают Chrome при установке и лаунчеры Android при отрисовке ярлыка */
+  function rasterize(svgStr, size, cb){
+    var img = new Image();
+    img.onload = function(){
+      try{
+        var c = document.createElement("canvas");
+        c.width = size; c.height = size;
+        var ctx = c.getContext("2d");
+        ctx.drawImage(img, 0, 0, size, size);
+        cb(c.toDataURL("image/png"));
+      }catch(e){ cb(null); }
+    };
+    img.onerror = function(){ cb(null); };
+    img.src = dataUri(svgStr);
+  }
+
+  /* манифест тоже встроен; без start_url — берётся адрес самой страницы,
+     поэтому работает и на github.io/repo/, и на github.io, и локально */
   var manifest = {
     name: "Судоку · Дзен",
     short_name: "Судоку Дзен",
@@ -956,12 +977,31 @@ if (store.kind === "memory"){
   };
   var link = document.createElement("link");
   link.rel = "manifest";
-  link.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
+  function applyManifest(){
+    link.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
+  }
+  applyManifest();
   document.head.appendChild(link);
 
-  /* кнопка «Установить» — только при раздаче по http(s) (Chrome на Android).
-     Офлайн-режим не требует сервис-воркера: файл полностью самодостаточен. */
-  var served = location.protocol === "http:" || location.protocol === "https:";
+  /* как только PNG готовы — подставляем их в манифест и в apple-touch-icon */
+  (function enrich(){
+    var pending = 3, pngs = [];
+    function done(src, sizes, purpose){
+      if (src) pngs.push({ src: src, sizes: sizes, type: "image/png", purpose: purpose });
+      if (--pending === 0 && pngs.length){
+        manifest.icons = pngs.concat(manifest.icons);
+        applyManifest();
+        for (var i = 0; i < pngs.length; i++)
+          if (pngs[i].sizes === "192x192") apple.href = pngs[i].src;
+      }
+    }
+    rasterize(svgIcon(false, 192), 192, function(u){ done(u, "192x192", "any"); });
+    rasterize(svgIcon(false, 512), 512, function(u){ done(u, "512x512", "any"); });
+    rasterize(svgIcon(true, 512),  512, function(u){ done(u, "512x512", "maskable"); });
+  })();
+
+  /* кнопка «Установить» — появляется по событию beforeinstallprompt,
+     которое Chrome шлёт только на https (например, на GitHub Pages) */
   var deferred = null, btn = $("installBtn");
   window.addEventListener("beforeinstallprompt", function(e){
     e.preventDefault();
