@@ -11,9 +11,12 @@
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b120e" />
 <title>Судоку · Дзен</title>
 <script>
-/* тема — до отрисовки, чтобы не мигать */
+/* тема — до отрисовки, чтобы не мигать (с запасным хранилищем) */
 (function () {
-  try { if (localStorage.getItem("sudoku-zen-theme") === "dark") document.documentElement.classList.add("dark"); } catch (e) {}
+  var t = null;
+  try { t = localStorage.getItem("sudoku-zen-theme"); } catch (e) {}
+  if (t == null) { try { t = sessionStorage.getItem("sudoku-zen-theme"); } catch (e) {} }
+  if (t === "dark") document.documentElement.classList.add("dark");
 })();
 </script>
 <style>
@@ -94,13 +97,28 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .brand h1{margin:0;font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1}
 .brand .sub{margin-top:4px;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .head-tools{display:flex;align-items:center;gap:8px}
-.chip{display:flex;align-items:center;border:1px solid var(--line);background:var(--surface);
+.chip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);
   border-radius:999px;padding:5px 8px;transition:background-color .45s ease,border-color .45s ease}
 .icon-btn{width:40px;height:40px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
   color:var(--ink-soft);display:grid;place-items:center;cursor:pointer;
   transition:transform .14s ease,background-color .3s ease,border-color .3s ease,color .3s ease}
 .icon-btn:hover{transform:translateY(-1px)}
 .icon-btn:active{transform:scale(.94)}
+.save-dot{width:7px;height:7px;border-radius:999px;background:var(--jade);opacity:0}
+.save-dot.flash{animation:saveFlash 1.1s ease-out}
+@keyframes saveFlash{
+  0%{opacity:0;transform:scale(.4)}
+  15%{opacity:1;transform:scale(1.2)}
+  70%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(1)}
+}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,16px);z-index:60;
+  background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);
+  padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;
+  box-shadow:var(--shadow);opacity:0;pointer-events:none;
+  transition:opacity .35s ease,transform .35s cubic-bezier(.22,1,.36,1),
+    background-color .45s ease,border-color .45s ease,color .45s ease}
+#toast.show{opacity:1;transform:translate(-50%,0)}
 .hidden{display:none!important}
 .install-btn{border-color:var(--amber-line);color:var(--amber);background:var(--amber-soft);animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
 
@@ -249,13 +267,14 @@ html.dark .btn-primary{color:#0c1712}
       </div>
     </div>
     <div class="head-tools">
-      <div class="chip" title="Прогресс решения">
+      <div class="chip" title="Прогресс · прогресс сохраняется автоматически">
         <svg width="26" height="26" viewBox="0 0 26 26" style="transform:rotate(-90deg)" aria-hidden="true">
           <circle cx="13" cy="13" r="10.5" fill="none" stroke="var(--line)" stroke-width="3.2"/>
           <circle id="ring" cx="13" cy="13" r="10.5" fill="none" stroke="var(--jade)" stroke-width="3.2"
             stroke-linecap="round" stroke-dasharray="65.97" stroke-dashoffset="65.97"
             style="transition:stroke-dashoffset .6s cubic-bezier(.22,1,.36,1)"/>
         </svg>
+        <span class="save-dot" id="saveDot" aria-hidden="true" title="Прогресс сохранён"></span>
       </div>
       <button class="icon-btn install-btn hidden" id="installBtn" aria-label="Установить приложение" title="Установить приложение">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v10.5"/><path d="M7.5 9.5L12 14l4.5-4.5"/><path d="M4.5 16.5v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></svg>
@@ -320,6 +339,8 @@ html.dark .btn-primary{color:#0c1712}
     <button class="btn-ghost" id="btnStay">Остаться и полюбоваться</button>
   </div>
 </div>
+
+<div id="toast" role="status" aria-live="polite"></div>
 
 <noscript><p style="text-align:center;padding:40px">Для игры включите JavaScript.</p></noscript>
 
@@ -457,23 +478,68 @@ var S = {
   won: false, generating: true, hintedCells: {},
   armed: 0, history: []
 };
+/* хранилище с запасными вариантами: localStorage → sessionStorage → память.
+   Если браузер запретил всё (закрытый предпросмотр), игра не падает,
+   но честно предупреждает, что прогресс не переживёт закрытие окна. */
+var store = (function(){
+  var backends = [], mem = {}, kind = "memory";
+  var memory = {
+    getItem: function(k){ return mem[k] != null ? mem[k] : null; },
+    setItem: function(k, v){ mem[k] = String(v); },
+    removeItem: function(k){ delete mem[k]; }
+  };
+  function probe(name){
+    try{
+      var s = window[name];
+      s.setItem("__zen__", "1"); s.removeItem("__zen__");
+      return s;
+    }catch(e){ return null; }
+  }
+  var ls = probe("localStorage"), ss = probe("sessionStorage");
+  if (ls){ backends.push(ls); kind = "local"; }
+  if (ss){ backends.push(ss); if (kind === "memory") kind = "session"; }
+  backends.push(memory);
+  var active = backends[0];
+  return {
+    kind: kind,
+    set: function(k, v){
+      try{ active.setItem(k, v); return; }catch(e){}
+      try{ memory.setItem(k, v); active = memory; kind = "memory"; }catch(e2){}
+    },
+    get: function(k){
+      for (var i = 0; i < backends.length; i++){
+        try{ var v = backends[i].getItem(k); if (v != null) return v; }catch(e){}
+      }
+      return null;
+    }
+  };
+})();
+
 function save(){
-  try{
-    localStorage.setItem(SAVE_KEY, JSON.stringify({
-      v: 1, puzzle: S.puzzle, solution: S.solution, board: S.board, given: S.given,
-      notes: S.notes, hints: S.hints, elapsed: S.elapsed, won: S.won
-    }));
-  }catch(e){}
+  store.set(SAVE_KEY, JSON.stringify({
+    v: 1, puzzle: S.puzzle, solution: S.solution, board: S.board, given: S.given,
+    notes: S.notes, hints: S.hints, elapsed: S.elapsed, won: S.won
+  }));
+  var d = $("saveDot");
+  if (d){ d.classList.remove("flash"); void d.offsetWidth; d.classList.add("flash"); }
 }
 function loadSave(){
   try{
-    var raw = localStorage.getItem(SAVE_KEY);
+    var raw = store.get(SAVE_KEY);
     if (!raw) return null;
     var s = JSON.parse(raw);
     if (s && s.board && s.board.length === CELLS && s.puzzle && s.puzzle.length === CELLS &&
         s.solution && s.solution.length === CELLS && s.given && s.notes) return s;
     return null;
   }catch(e){ return null; }
+}
+function toast(msg){
+  var t = $("toast");
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.remove("show"); void t.offsetWidth; t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ t.classList.remove("show"); }, 2800);
 }
 
 /* ============ отмена действий ============ */
@@ -746,7 +812,7 @@ function applyThemeIcons(){
 }
 $("themeBtn").addEventListener("click", function(){
   var dark = document.documentElement.classList.toggle("dark");
-  try{ localStorage.setItem(THEME_KEY, dark ? "dark" : "light"); }catch(e){}
+  store.set(THEME_KEY, dark ? "dark" : "light");
   applyThemeIcons();
 });
 applyThemeIcons();
@@ -809,6 +875,12 @@ function showWin(){
 $("btnAgain").addEventListener("click", startNew);
 $("btnStay").addEventListener("click", function(){ $("win").hidden = true; });
 
+/* страховочное сохранение при закрытии вкладки и сворачивании окна */
+window.addEventListener("pagehide", save);
+document.addEventListener("visibilitychange", function(){
+  if (document.visibilityState === "hidden" && !S.generating && S.solution) save();
+});
+
 /* ============ старт ============ */
 var restored = loadSave();
 if (restored){
@@ -819,8 +891,12 @@ if (restored){
   S.generating = false;
   render();
   if (S.won) setTimeout(showWin, 400);
+  setTimeout(function(){ toast("Продолжаем сохранённую игру"); }, 700);
 } else {
   startNew();
+}
+if (store.kind === "memory"){
+  setTimeout(function(){ toast("Браузер запретил хранилище — прогресс не сохранится"); }, 1400);
 }
 })();
 
