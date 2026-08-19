@@ -593,16 +593,6 @@ var RING_C = 65.97;
     keyBtns.push(k);
     keyCnts.push(k.lastChild);
   }
-  /* десятая клавиша — стирание, заполняет второй ряд (6 7 8 9 + ⌫) */
-  var ek = document.createElement("button");
-  ek.type = "button";
-  ek.className = "key key-erase rise";
-  ek.style.animationDelay = "300ms";
-  ek.title = "Стереть клетку (Backspace)";
-  ek.setAttribute("aria-label", "Стереть клетку");
-  ek.innerHTML = '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 20h11.5"/><path d="M5.2 14.6l7.4-7.4a2 2 0 0 1 2.8 0l3 3a2 2 0 0 1 0 2.8l-5.4 5.4a2 2 0 0 1-1.4.6H9l-3.8-3.8a1.9 1.9 0 0 1 0-2.6z"/><path d="M9.5 10.3l4.6 4.6"/></svg>';
-  ek.addEventListener("click", function(){ eraseCell(); });
-  keysEl.appendChild(ek);
 })();
 
 function showSkeleton(){
