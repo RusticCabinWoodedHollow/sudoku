@@ -9,6 +9,11 @@
 <meta name="apple-mobile-web-app-title" content="Судоку Дзен" />
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#eae7f5" />
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b120e" />
+<meta name="description" content="Судоку Дзен — спокойная игра среднего уровня без проигрыша." />
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
 <title>Судоку · Дзен</title>
 <script>
 /* тема — до отрисовки, чтобы не мигать (с запасным хранилищем) */
@@ -97,21 +102,11 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .brand h1{margin:0;font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1}
 .brand .sub{margin-top:4px;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .head-tools{display:flex;align-items:center;gap:8px}
-.chip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);
-  border-radius:999px;padding:5px 8px;transition:background-color .45s ease,border-color .45s ease}
 .icon-btn{width:40px;height:40px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
   color:var(--ink-soft);display:grid;place-items:center;cursor:pointer;
   transition:transform .14s ease,background-color .3s ease,border-color .3s ease,color .3s ease}
 .icon-btn:hover{transform:translateY(-1px)}
 .icon-btn:active{transform:scale(.94)}
-.save-dot{width:7px;height:7px;border-radius:999px;background:var(--jade);opacity:0}
-.save-dot.flash{animation:saveFlash 1.1s ease-out}
-@keyframes saveFlash{
-  0%{opacity:0;transform:scale(.4)}
-  15%{opacity:1;transform:scale(1.2)}
-  70%{opacity:1;transform:scale(1)}
-  100%{opacity:0;transform:scale(1)}
-}
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,16px);z-index:60;
   background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);
   padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;
@@ -185,8 +180,11 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .key.done{opacity:.4}
 .key.done .d{color:var(--muted)}
 .key.rise{animation:riseIn .4s ease both}
+.key.hint{border-color:var(--amber-line);background:var(--amber-soft);color:var(--amber)}
+.key.hint:hover{border-color:var(--amber);transform:translateY(-2px)}
+.hint-icos{display:flex;align-items:center;justify-content:center;gap:2px}
 @keyframes riseIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
-.actions{width:100%;margin-top:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.actions{width:100%;margin-top:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .act{border:1px solid var(--line);background:var(--surface);border-radius:10px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 1px;
   color:var(--ink-soft);
@@ -196,12 +194,8 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .act .lbl{font-size:10px;font-weight:600;letter-spacing:.01em}
 .act.off{opacity:.38}
 .act.off:hover{transform:none}
-.act.hint{border-color:var(--amber-line);background:var(--amber-soft);color:var(--amber)}
-.act.hint:hover{border-color:var(--amber)}
 .act.notes.active{background:var(--jade);border-color:var(--jade);color:var(--surface)}
 .act.arm{border-color:var(--rose);background:var(--rose-soft);color:var(--rose)}
-.kbd{margin:auto 0 0;padding-top:26px;font-size:11px;line-height:1.6;color:var(--muted);opacity:.7;text-align:center}
-@media (hover:none){.kbd{display:none}}
 
 /* ================= победа ================= */
 #win{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;
@@ -280,16 +274,16 @@ html.dark .btn-primary{color:#0c1712}
 
   <div id="board" class="board-frame" role="grid" aria-label="Поле судоку"></div>
 
-  <div class="keys" id="keys" role="group" aria-label="Цифры" title="Выберите цифру — затем тыкайте в пустые клетки, она будет вставать сама"></div>
+  <div class="keys" id="keys" role="group" aria-label="Цифры">
+    <button class="key hint" id="btnHint" type="button" title="Подсказка" aria-label="Подсказка">
+      <span class="hint-icos" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.9 5.4 5.4 1.9-5.4 1.9L12 18.1l-1.9-5.4-5.4-1.9 5.4-1.9L12 3.5z"/><path d="M19 3v3M20.5 4.5h-3"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="8" cy="12" r="4.1"/><circle cx="16" cy="12" r="4.1"/></svg>
+      </span>
+    </button>
+  </div>
 
   <div class="actions">
-    <button class="act hint" id="btnHint" title="Подсказка — заполняет клетку правильным числом (H)">
-      <span style="display:flex;align-items:center;gap:5px">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.9 5.4 5.4 1.9-5.4 1.9L12 18.1l-1.9-5.4-5.4-1.9 5.4-1.9L12 3.5z"/><path d="M19 3v3M20.5 4.5h-3"/></svg>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="8" cy="12" r="4.1"/><circle cx="16" cy="12" r="4.1"/></svg>
-      </span>
-      <span class="lbl">Подсказка</span>
-    </button>
     <button class="act off" id="btnUndo" title="Отменить действие (Ctrl+Z или U)" aria-disabled="true">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-4"/></svg>
       <span class="lbl">Отмена</span>
@@ -511,8 +505,6 @@ function save(){
     v: 1, puzzle: S.puzzle, solution: S.solution, board: S.board, given: S.given,
     notes: S.notes, hints: S.hints, elapsed: S.elapsed, won: S.won
   }));
-  var d = $("saveDot");
-  if (d){ d.classList.remove("flash"); void d.offsetWidth; d.classList.add("flash"); }
 }
 function loadSave(){
   try{
@@ -552,9 +544,8 @@ function undo(){
 
 /* ============ DOM ============ */
 var $ = function(id){ return document.getElementById(id); };
-var boardEl = $("board"), keysEl = $("keys"), ringEl = $("ring");
+var boardEl = $("board"), keysEl = $("keys");
 var cells = [], cellCV = [], cellNG = [], keyBtns = [], keyCnts = [];
-var RING_C = 65.97;
 
 /* строим доску один раз */
 (function build(){
@@ -573,16 +564,19 @@ var RING_C = 65.97;
     cellCV.push(el.firstChild);
     cellNG.push(el.lastChild);
   }
+  var hintBtn = $("btnHint");
   for (var d = 1; d <= 9; d++){
     var k = document.createElement("button");
     k.type = "button"; k.className = "key rise";
     k.style.animationDelay = (d * 30) + "ms";
     k.innerHTML = '<span class="d">' + d + '</span><span class="n">9</span>';
     (function(digit){ k.addEventListener("click", function(){ onKeyTap(digit); }); })(d);
-    keysEl.appendChild(k);
+    keysEl.insertBefore(k, hintBtn);
     keyBtns.push(k);
     keyCnts.push(k.lastChild);
   }
+  hintBtn.classList.add("rise");
+  hintBtn.style.animationDelay = "300ms";
 })();
 
 function showSkeleton(){
@@ -605,9 +599,8 @@ function render(){
     var ps = PEERS[S.sel];
     for (var p = 0; p < ps.length; p++) peerSet[ps[p]] = 1;
   }
-  var correct = 0;
   for (var i = 0; i < CELLS; i++){
-    var el = cells[i], v = S.board[i], r = rowOf(i), c = colOf(i);
+    var el = cells[i], v = S.board[i];
     el.classList.remove("skeleton");
     el.classList.toggle("given", !!S.given[i]);
     el.classList.toggle("hinted", !!S.hintedCells[i]);
@@ -629,7 +622,6 @@ function render(){
       for (var d = 1; d <= 9; d++)
         cellNG[i].children[d - 1].textContent = (bits & (1 << d)) ? d : "";
     }
-    if (S.board[i] === S.solution[i]) correct++;
   }
   /* цифры: сколько осталось */
   var counts = [0,0,0,0,0,0,0,0,0,0];
@@ -644,8 +636,6 @@ function render(){
   var ub = $("btnUndo");
   ub.classList.toggle("off", !S.history.length);
   ub.setAttribute("aria-disabled", S.history.length ? "false" : "true");
-  /* прогресс */
-  ringEl.style.strokeDashoffset = String(RING_C * (1 - correct / CELLS));
 }
 
 /* ============ действия ============ */
@@ -892,108 +882,18 @@ if (store.kind === "memory"){
 })();
 
 /* ============ установка как приложение (PWA) ============
-   Иконка и манифест встроены прямо в этот файл (data-URI) —
-   файл полностью самодостаточен. SVG-иконка при загрузке
-   растеризуется в настоящие PNG (192/512/maskable), которые
-   надёжно подхватывают Chrome и лаунчеры Android.
-   Установка доступна при раздаче по http(s) — например,
-   на GitHub Pages; при открытии с диска (file://) игра
-   просто работает как обычный документ. */
+   Манифест и PNG-иконки лежат отдельными файлами — так Chrome на Android
+   ставит ярлык с названием «Судоку Дзен». Data-URI манифест Chrome не
+   принимает. Service worker нужен для офлайна после установки. */
 (function(){
-  function svgIcon(maskable, size){
-    var rx = maskable ? 0 : 112, wh = size ? (" width='" + size + "' height='" + size + "'") : "";
-    return "<svg xmlns='http://www.w3.org/2000/svg'" + wh + " viewBox='0 0 512 512'>"
-      + "<defs><radialGradient id='g' cx='30%' cy='24%' r='90%'>"
-      + "<stop offset='0%' stop-color='#1e3a2c'/><stop offset='55%' stop-color='#101d17'/><stop offset='100%' stop-color='#0a100d'/></radialGradient>"
-      + "<radialGradient id='h' cx='78%' cy='82%' r='55%'>"
-      + "<stop offset='0%' stop-color='#d9ab55' stop-opacity='0.20'/><stop offset='100%' stop-color='#d9ab55' stop-opacity='0'/></radialGradient></defs>"
-      + "<rect width='512' height='512' rx='" + rx + "' fill='url(#g)'/>"
-      + "<rect width='512' height='512' rx='" + rx + "' fill='url(#h)'/>"
-      + "<circle cx='256' cy='256' r='120' fill='none' stroke='#4fbf8b' stroke-width='66' stroke-linecap='round' stroke-dasharray='648 120' transform='rotate(-108 256 256)' opacity='0.22'/>"
-      + "<circle cx='256' cy='256' r='120' fill='none' stroke='#1c4a35' stroke-width='42' stroke-linecap='round' stroke-dasharray='642 112' transform='rotate(-104 256 256)'/>"
-      + "<circle cx='256' cy='256' r='120' fill='none' stroke='#5cb98c' stroke-width='34' stroke-linecap='round' stroke-dasharray='642 112' transform='rotate(-108 256 256)'/>"
-      + "<circle cx='256' cy='256' r='120' fill='none' stroke='#a8e6c6' stroke-width='10' stroke-linecap='round' stroke-dasharray='262 542' transform='rotate(-96 256 256)' opacity='0.55'/>"
-      + "<text x='256' y='280' text-anchor='middle' font-family='Georgia,serif' font-size='168' font-weight='700' fill='#e9dcba' opacity='0.96'>禅</text>"
-      + "<g transform='rotate(9 318 344)'><rect x='291' y='317' width='54' height='54' rx='11' fill='#c98f3a'/>"
-      + "<rect x='291' y='317' width='54' height='54' rx='11' fill='none' stroke='#f2d491' stroke-width='2.5' opacity='0.7'/>"
-      + "<text x='318' y='358' text-anchor='middle' font-family='Georgia,serif' font-size='38' font-weight='700' fill='#3a2708'>和</text></g>"
-      + "<circle cx='186' cy='256' r='6' fill='#d9ab55' opacity='0.9'/><circle cx='256' cy='340' r='5' fill='#d9ab55' opacity='0.65'/></svg>";
+  if ("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){});
+    });
   }
-  function dataUri(svg){
-    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
-  }
-
-  /* иконки — favicon и ярлык домашнего экрана, из этого же файла */
-  var fav = document.createElement("link");
-  fav.rel = "icon"; fav.type = "image/svg+xml"; fav.href = dataUri(svgIcon(false));
-  document.head.appendChild(fav);
-  var apple = document.createElement("link");
-  apple.rel = "apple-touch-icon"; apple.href = dataUri(svgIcon(false, 180));
-  document.head.appendChild(apple);
-
-  /* растеризация SVG в настоящий PNG (canvas): такие иконки гарантированно
-     принимают Chrome при установке и лаунчеры Android при отрисовке ярлыка */
-  function rasterize(svgStr, size, cb){
-    var img = new Image();
-    img.onload = function(){
-      try{
-        var c = document.createElement("canvas");
-        c.width = size; c.height = size;
-        var ctx = c.getContext("2d");
-        ctx.drawImage(img, 0, 0, size, size);
-        cb(c.toDataURL("image/png"));
-      }catch(e){ cb(null); }
-    };
-    img.onerror = function(){ cb(null); };
-    img.src = dataUri(svgStr);
-  }
-
-  /* манифест тоже встроен; без start_url — берётся адрес самой страницы,
-     поэтому работает и на github.io/repo/, и на github.io, и локально */
-  var manifest = {
-    name: "Судоку · Дзен",
-    short_name: "Судоку Дзен",
-    description: "Дзен-судоку среднего уровня: без проигрыша, без звука, с бесконечными подсказками.",
-    lang: "ru",
-    display: "standalone",
-    orientation: "portrait",
-    background_color: "#0d1412",
-    theme_color: "#0d1412",
-    categories: ["games", "puzzle"],
-    icons: [
-      { src: dataUri(svgIcon(false)), sizes: "any", type: "image/svg+xml", purpose: "any" },
-      { src: dataUri(svgIcon(true)),  sizes: "any", type: "image/svg+xml", purpose: "maskable" },
-      { src: dataUri(svgIcon(true)),  sizes: "512x512", type: "image/svg+xml", purpose: "maskable" }
-    ]
-  };
-  var link = document.createElement("link");
-  link.rel = "manifest";
-  function applyManifest(){
-    link.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
-  }
-  applyManifest();
-  document.head.appendChild(link);
-
-  /* как только PNG готовы — подставляем их в манифест и в apple-touch-icon */
-  (function enrich(){
-    var pending = 3, pngs = [];
-    function done(src, sizes, purpose){
-      if (src) pngs.push({ src: src, sizes: sizes, type: "image/png", purpose: purpose });
-      if (--pending === 0 && pngs.length){
-        manifest.icons = pngs.concat(manifest.icons);
-        applyManifest();
-        for (var i = 0; i < pngs.length; i++)
-          if (pngs[i].sizes === "192x192") apple.href = pngs[i].src;
-      }
-    }
-    rasterize(svgIcon(false, 192), 192, function(u){ done(u, "192x192", "any"); });
-    rasterize(svgIcon(false, 512), 512, function(u){ done(u, "512x512", "any"); });
-    rasterize(svgIcon(true, 512),  512, function(u){ done(u, "512x512", "maskable"); });
-  })();
-
-  /* кнопка «Установить» — появляется по событию beforeinstallprompt,
-     которое Chrome шлёт только на https (например, на GitHub Pages) */
-  var deferred = null, btn = $("installBtn");
+  var deferred = null;
+  var btn = document.getElementById("installBtn");
+  if (!btn) return;
   window.addEventListener("beforeinstallprompt", function(e){
     e.preventDefault();
     deferred = e;
@@ -1008,6 +908,7 @@ if (store.kind === "memory"){
     });
   });
   window.addEventListener("appinstalled", function(){
+    deferred = null;
     btn.classList.add("hidden");
   });
 })();
