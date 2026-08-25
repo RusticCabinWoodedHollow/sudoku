@@ -9,6 +9,7 @@ const ASSETS = [
   "./icons/apple-touch-icon.png"
 ];
 
+// Предварительное кэширование всех ресурсов при установке
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -19,6 +20,7 @@ self.addEventListener("install", (event) => {
   );
 });
 
+// Очистка старых кэшей и активация нового
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((names) => {
@@ -29,6 +31,7 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// Стратегия: сначала кэш, потом сеть (Cache First) для офлайн-работы
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
@@ -36,7 +39,10 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
+      // Если есть в кэше — возвращаем из кэша
       if (cached) return cached;
+      
+      // Если нет в кэше — пробуем получить из сети
       return fetch(event.request).then((response) => {
         if (!response || response.status !== 200 || response.type !== "basic") {
           return response;
@@ -44,7 +50,10 @@ self.addEventListener("fetch", (event) => {
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;
-      }).catch(() => caches.match("./index.html"));
+      }).catch(() => {
+        // Если сеть недоступна, возвращаем index.html для SPA
+        return caches.match("./index.html");
+      });
     })
   );
 });
