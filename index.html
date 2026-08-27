@@ -117,6 +117,19 @@ header{width:100%;display:flex;align-items:center;justify-content:space-between;
 .hidden{display:none!important}
 .install-btn{border-color:var(--amber-line);color:var(--amber);background:var(--amber-soft);animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
 
+/* ============ модалка «как установить» (когда нативного prompt нет, напр. iOS) ============ */
+#installTip{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;
+  background:rgba(10,15,13,.55);animation:fadeIn .4s ease both}
+#installTip[hidden]{display:none}
+.tip-card{position:relative;width:100%;max-width:380px;text-align:center;
+  background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);
+  padding:30px 26px 24px;animation:cardIn .55s cubic-bezier(.22,1.2,.36,1) both}
+.tip-icon{font-size:44px;margin-bottom:10px}
+.tip-card h2{margin:0 0 8px;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.tip-card p{margin:0;font-size:14.5px;line-height:1.6;color:var(--muted)}
+.tip-card p b{color:var(--ink);font-weight:700}
+.tip-card .btn-primary{margin-top:20px}
+
 /* ================= доска ================= */
 .board-frame{
   width:min(94vw,460px);aspect-ratio:1/1;
@@ -262,7 +275,7 @@ html.dark .btn-primary{color:#0c1712}
       </div>
     </div>
     <div class="head-tools">
-      <button class="icon-btn install-btn hidden" id="installBtn" aria-label="Установить приложение" title="Установить приложение">
+      <button class="icon-btn install-btn" id="installBtn" aria-label="Установить приложение" title="Установить приложение">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v10.5"/><path d="M7.5 9.5L12 14l4.5-4.5"/><path d="M4.5 16.5v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></svg>
       </button>
       <button class="icon-btn" id="themeBtn" aria-label="Переключить тему">
@@ -326,6 +339,16 @@ html.dark .btn-primary{color:#0c1712}
 </div>
 
 <div id="toast" role="status" aria-live="polite"></div>
+
+<!-- как установить (нет нативного prompt) -->
+<div id="installTip" hidden>
+  <div class="tip-card" role="dialog" aria-label="Установить приложение">
+    <div class="tip-icon">📲</div>
+    <h2>Установить</h2>
+    <p id="installTipText"></p>
+    <button class="btn-primary" id="installTipOk">Понятно</button>
+  </div>
+</div>
 
 <noscript><p style="text-align:center;padding:40px">Для игры включите JavaScript.</p></noscript>
 
@@ -894,22 +917,39 @@ if (store.kind === "memory"){
   var deferred = null;
   var btn = document.getElementById("installBtn");
   if (!btn) return;
+  /* уже установлено (standalone) — кнопку прячем */
+  function isStandalone(){
+    return window.matchMedia && matchMedia("(display-mode: standalone)").matches;
+  }
+  function hideBtn(){ btn.style.display = "none"; }
+  if (isStandalone()) return;
+  function showInstallTip(){
+    var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var t = document.getElementById("installTipText");
+    t.innerHTML = ios
+      ? "В Safari нажмите кнопку <b>Поделиться</b> внизу, затем <b>«На экран Домой»</b>."
+      : "В меню браузера <b>⋮</b> выберите <b>«Установить приложение»</b> или <b>«Добавить на главный экран»</b>.";
+    document.getElementById("installTip").hidden = false;
+  }
+  document.getElementById("installTipOk").addEventListener("click", function(){
+    document.getElementById("installTip").hidden = true;
+  });
   window.addEventListener("beforeinstallprompt", function(e){
     e.preventDefault();
     deferred = e;
-    btn.classList.remove("hidden");
   });
   btn.addEventListener("click", function(){
-    if (!deferred) return;
-    deferred.prompt();
-    deferred.userChoice.then(function(){
-      deferred = null;
-      btn.classList.add("hidden");
-    });
+    if (deferred){
+      deferred.prompt();
+      deferred.userChoice.then(function(){ deferred = null; });
+    } else {
+      showInstallTip();
+    }
   });
   window.addEventListener("appinstalled", function(){
     deferred = null;
-    btn.classList.add("hidden");
+    hideBtn();
   });
 })();
 </script>
