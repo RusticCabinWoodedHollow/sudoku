@@ -1,7 +1,7 @@
 {
-  "name": "Судоку Дзен",
+  "name": "Судоку",
   "short_name": "Судоку",
-  "description": "Спокойная судоку среднего уровня: без проигрыша, с бесконечными подсказками.",
+  "description": "Судоку среднего уровня: подсказки без ограничений, проигрыша нет.",
   "lang": "ru",
   "dir": "ltr",
   "start_url": "./",
@@ -9,8 +9,8 @@
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
-  "background_color": "#0d1412",
-  "theme_color": "#0d1412",
+  "background_color": "#040a16",
+  "theme_color": "#040a16",
   "categories": ["games", "puzzle"],
   "prefer_related_applications": false,
   "icons": [
